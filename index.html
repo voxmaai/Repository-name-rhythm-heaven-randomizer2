@@ -108,87 +108,111 @@ header{text-align:center;margin-bottom:20px} h1{margin:0;font-size:clamp(24px,5v
 }
 
 
-/* Mobile centering fix */
-#draw, #settings {
+/* Final responsive/mobile layout fix */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+.wrap {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.panel, #draw, #settings {
   width: 100%;
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
-  box-sizing: border-box;
 }
-#draw { text-align: center; }
+
+#draw { text-align: center; overflow: hidden; }
+
+#drawStatus, #resultStage, #resultName, #congrats, #draw .actions, #draw .note {
+  width: 100%;
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#drawStatus, #resultStage, #resultName, #congrats {
+  display: block;
+  text-align: center;
+}
+
+#resultName, #resultStage {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draw-progress {
+  width: 100%;
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 #draw .actions {
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
+  gap: 10px;
 }
 
-#draw .btn {
+#draw .actions .btn, #draw .drawbtn {
   margin-left: auto;
   margin-right: auto;
-}
-
-#resultStage, #resultName, #drawStatus, #congrats {
-  display: block;
-  width: 100%;
-  max-width: min(680px, calc(100vw - 32px));
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-  box-sizing: border-box;
-}
-
-.draw-progress {
-  width: min(680px, calc(100vw - 24px));
-  max-width: min(680px, calc(100vw - 24px));
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
 }
 
 .embedded-progress {
-  width: min(760px, calc(100vw - 24px));
-  max-width: min(760px, calc(100vw - 24px));
+  width: 100%;
+  max-width: 760px;
   margin-left: auto;
   margin-right: auto;
-  box-sizing: border-box;
 }
 
 @media (max-width: 600px) {
-  body { overflow-x: hidden; }
-  #draw { padding-left: 8px; padding-right: 8px; }
+  .wrap {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .panel, #draw, #settings { overflow: hidden; }
+  #draw { padding-left: 4px; padding-right: 4px; }
+
+  .draw-progress, .embedded-progress,
+  #drawStatus, #resultStage, #resultName, #congrats,
+  #draw .actions, #draw .note {
+    width: 100%;
+    max-width: 100%;
+  }
 
   #draw .actions {
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
   }
 
-  #draw .btn {
-    width: min(280px, calc(100vw - 40px));
-    max-width: calc(100vw - 40px);
+  #draw .actions .btn, #draw .drawbtn {
+    width: min(280px, 100%);
+    max-width: 100%;
   }
 
-  .draw-progress, .embedded-progress {
-    width: calc(100vw - 24px);
-    max-width: calc(100vw - 24px);
-  }
-
-  #resultStage, #resultName, #drawStatus, #congrats {
-    width: calc(100vw - 32px);
-    max-width: calc(100vw - 32px);
-  }
+  .draw-progress-head, .draw-progress-foot { width: 100%; max-width: 100%; }
+  .draw-progress-head { white-space: nowrap; }
 
   #congrats {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: clamp(.85rem, 3.8vw, 1.1rem);
+    font-size: clamp(.82rem, 3.7vw, 1.05rem);
   }
 }
 
