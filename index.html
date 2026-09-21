@@ -19,10 +19,11 @@ header{text-align:center;margin-bottom:20px} h1{margin:0;font-size:clamp(24px,5v
 .big{font-size:28px;font-weight:900} .bar{height:14px;background:#eee7df;border-radius:99px;overflow:hidden;margin:10px 0 18px} .fill{height:100%;background:var(--ok);width:0;transition:width .35s}
 .stage{border:1px solid var(--line);border-radius:16px;margin:10px 0;overflow:hidden} .stage-head{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;background:#faf8f5;font-weight:900}
 .game-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;padding:10px}
-.game{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+/* ↓ text-align: left; を追加 */
+.game{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;text-align:left;}
 .game.done{background:#edf8f1;border-color:#cfe9d9} .mark{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#eee9e2;color:#777;font-weight:900;flex:none}
 .done .mark{background:var(--ok);color:white;box-shadow:0 0 0 3px #d8f0e1} .name{font-weight:750} .small{font-size:12px;color:var(--muted)}
-.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px} .setting-game{display:flex;gap:9px;align-items:center;border:1px solid var(--line);padding:10px;border-radius:12px} .setting-game input{width:18px;height:18px}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px} .setting-game{display:flex;gap:9px;align-items:center;border:1px solid var(--line);padding:10px;border-radius:12px;text-align:left;} .setting-game input{width:18px;height:18px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px} .btn.secondary{background:#eee9e2;color:#444} .btn.danger{background:#8f3444;color:white}
 .note{font-size:13px;color:var(--muted);margin-top:10px} .status{min-height:22px;color:var(--muted);font-weight:700}
 @media(max-width:560px){.game-grid{grid-template-columns:1fr 1fr} .panel{padding:14px}}
@@ -286,8 +287,6 @@ function load(){
     const s=JSON.parse(localStorage.getItem(KEY)||"null");
     if(s && s.enabled) return {enabled:{...defaults.enabled,...s.enabled}};
   } catch(e){}
-  // 旧バージョンのデータが残っている場合は、PERFECT達成済みを
-  // 「チェックOFF＝達成・抽選対象外」として引き継ぐ。
   try {
     const old=JSON.parse(localStorage.getItem("rhythm-heaven-ms-perfect-v1")||"null");
     if(old && old.enabled){
@@ -340,7 +339,6 @@ async function draw(){
     return;
   }
 
-  // 残り2ゲーム以上なら、直前に引いたゲームを次の最終抽選候補から外す。
   const avoidId = (pool.length >= 2) ? previousDrawId : null;
   const finalPool = avoidId ? pool.filter(g=>g.id!==avoidId) : pool;
   const actualPool = finalPool.length ? finalPool : pool;
@@ -366,7 +364,6 @@ async function draw(){
     const t=(performance.now()-start)/duration;
     const delay=45 + Math.floor(t*t*230);
 
-    // ルーレット中も、連続して同じ名前が出にくいようにする。
     let displayPool=pool;
     if(pool.length>=2 && lastId){
       const candidates=pool.filter(g=>g.id!==lastId);
@@ -380,8 +377,6 @@ async function draw(){
     nameEl.textContent=item.name;
     await sleep(delay);
 
-    // 抽選途中で達成状態が変わることは通常ないが、
-    // 念のため現時点の候補を最新化。
     pool=eligible();
   }
 
