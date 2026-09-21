@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>リズム天国 ミラクルスターズ｜パーフェクトチャレンジ</title>
+<style>
+:root{--bg:#f7f4ef;--card:#fff;--ink:#25252a;--muted:#777;--accent:#e85d75;--accent2:#ffd86b;--ok:#35a56b;--line:#e6dfd6}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif}
+button,input{font:inherit} .wrap{max-width:1000px;margin:auto;padding:24px 16px 60px}
+header{text-align:center;margin-bottom:20px} h1{margin:0;font-size:clamp(24px,5vw,42px)} .sub{color:var(--muted);margin-top:6px}
+.tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:18px 0} .tab,.btn{border:0;border-radius:12px;padding:11px 16px;cursor:pointer;font-weight:700}
+.tab{background:#e9e4dc;color:#555} .tab.active,.btn.primary{background:var(--accent);color:white}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 4px 18px #00000008}
+.hidden{display:none!important} .hero{text-align:center;padding:30px 16px} .result{min-height:150px;display:grid;place-items:center}
+.result-name{font-size:clamp(28px,7vw,56px);font-weight:900} .result-stage{color:var(--muted);font-weight:700}
+.drawbtn{font-size:20px;padding:15px 28px;border-radius:16px;border:0;background:var(--accent);color:#fff;cursor:pointer;font-weight:900}
+.drawbtn:disabled{opacity:.5;cursor:not-allowed} .progress-row{display:flex;justify-content:space-between;gap:10px;align-items:end}
+.big{font-size:28px;font-weight:900} .bar{height:14px;background:#eee7df;border-radius:99px;overflow:hidden;margin:10px 0 18px} .fill{height:100%;background:var(--ok);width:0;transition:width .35s}
+.stage{border:1px solid var(--line);border-radius:16px;margin:10px 0;overflow:hidden} .stage-head{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;background:#faf8f5;font-weight:900}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;padding:10px}
+.game{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+.game.done{background:#edf8f1;border-color:#cfe9d9} .mark{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#eee9e2;color:#777;font-weight:900;flex:none}
+.done .mark{background:var(--ok);color:white;box-shadow:0 0 0 3px #d8f0e1} .name{font-weight:750} .small{font-size:12px;color:var(--muted)}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px} .setting-game{display:flex;gap:9px;align-items:center;border:1px solid var(--line);padding:10px;border-radius:12px} .setting-game input{width:18px;height:18px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px} .btn.secondary{background:#eee9e2;color:#444} .btn.danger{background:#8f3444;color:white}
+.note{font-size:13px;color:var(--muted);margin-top:10px} .status{min-height:22px;color:var(--muted);font-weight:700}
+@media(max-width:560px){.game-grid{grid-template-columns:1fr 1fr} .panel{padding:14px}}
+
+.congrats{
+  min-height: 1.8em;
+  margin-top: 14px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #d97706;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .25s ease, transform .25s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.congrats.show{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+.draw-progress{
+  width:min(680px,92%);
+  margin:0 auto 18px;
+  padding:14px 16px;
+  border-radius:14px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(0,0,0,.08);
+  box-sizing:border-box;
+}
+.draw-progress-head,.draw-progress-foot{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.draw-progress-head{white-space:nowrap;flex-wrap:nowrap;}
+.draw-progress-head{font-weight:700;margin-bottom:8px}
+.draw-progress-foot{margin-top:6px;font-size:.85rem;opacity:.72}
+.draw-progress-track{width:100%;height:10px;overflow:hidden;border-radius:999px;background:rgba(0,0,0,.09)}
+.draw-progress-fill{width:0%;height:100%;border-radius:999px;background:currentColor;transition:width .35s ease}
+
+
+.embedded-progress{
+  width:min(760px,94%);
+  margin:28px auto 0;
+  padding:20px 0 8px;
+  border-top:2px solid rgba(0,0,0,.08);
+}
+.embedded-progress-title{
+  font-size:1.15rem;
+  font-weight:800;
+  margin:0 0 14px;
+  text-align:left;
+}
+
+.draw-progress-head span,.draw-progress-head strong{
+  white-space:nowrap;
+}
+
+#resultName{
+  width:min(680px,92vw);
+  max-width:min(680px,92vw);
+  min-height:1.35em;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  box-sizing:border-box;
+}
+#resultStage{
+  width:min(680px,92vw);
+  max-width:min(680px,92vw);
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+  white-space:nowrap;
+  box-sizing:border-box;
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>リズム天国 ミラクルスターズ</h1><div class="sub">PERFECT CHALLENGE RANDOMIZER</div></header>
+<div class="tabs">
+<button class="tab active" data-tab="draw">🎲 抽選・進捗</button>
+<button class="tab" data-tab="settings">⚙ 設定</button>
+</div>
+
+<section id="draw" class="panel">
+<div class="hero">
+<div class="status" id="drawStatus">抽選対象：80 / 80</div>
+<div class="result" aria-live="polite">
+<div>
+<div class="draw-progress" id="drawProgress">
+  <div class="draw-progress-head">
+    <span>PERFECT達成</span>
+    <strong id="drawProgressCount">0 / 80</strong>
+  </div>
+  <div class="draw-progress-track"><div class="draw-progress-fill" id="drawProgressFill"></div></div>
+  <div class="draw-progress-foot"><span id="drawProgressPct">0%</span><span id="drawProgressRemaining">残り80ゲーム</span></div>
+</div>
+<div class="result-stage" id="resultStage">準備OK</div><div class="result-name" id="resultName">？</div></div>
+</div>
+<button class="drawbtn" id="drawBtn">🎲 抽選する</button>
+<div class="actions" style="justify-content:center">
+<button class="btn secondary" id="successBtn" disabled>✓ PERFECT達成</button>
+<div id="congrats" class="congrats" aria-live="polite"></div>
+</div>
+<div class="note">PERFECTできたら「PERFECT達成」を押してください。できなかった場合は、そのまま「抽選する」をもう一度押します。</div>
+</div>
+
+<div class="embedded-progress">
+  <div class="embedded-progress-title">STAGE別 進捗</div>
+  <div id="progressList"></div>
+</div>
+</section>
+
+
+
+<section id="settings" class="panel hidden">
+<h2>抽選対象ゲーム</h2>
+<p class="note">チェックを外すと達成扱いになります。あとからチェックを入れ直すと未達成に戻ります。</p>
+<div class="actions">
+<button class="btn secondary" id="allOn">全て選択</button>
+<button class="btn secondary" id="allOff">全て解除</button>
+</div>
+<div id="settingsList" style="margin-top:14px"></div>
+<div class="actions">
+<button class="btn danger" id="reset">進捗をリセット</button>
+</div>
+<div class="note">進捗と設定はこのブラウザに自動保存されます。ページをリロードしても維持されます。</div>
+</section>
+</div>
+
+<script>
+const GAMES = [{"id": "1-1", "name": "輪くぐり", "stage": 1}, {"id": "1-2", "name": "パラソル", "stage": 1}, {"id": "1-3", "name": "フライングディスク", "stage": 1}, {"id": "1-4", "name": "アレのエサ", "stage": 1}, {"id": "1-5", "name": "リミックス1", "stage": 1}, {"id": "2-1", "name": "ケロケロロケット", "stage": 2}, {"id": "2-2", "name": "カーアクション", "stage": 2}, {"id": "2-3", "name": "ハードル", "stage": 2}, {"id": "2-4", "name": "プチプチ研究室", "stage": 2}, {"id": "2-5", "name": "リミックス2", "stage": 2}, {"id": "3-1", "name": "下ごしらえ", "stage": 3}, {"id": "3-2", "name": "へくしょいムーン", "stage": 3}, {"id": "3-3", "name": "カニトリオ", "stage": 3}, {"id": "3-4", "name": "コロコロ行進", "stage": 3}, {"id": "3-5", "name": "リミックス3", "stage": 3}, {"id": "4-1", "name": "パンプアップル", "stage": 4}, {"id": "4-2", "name": "会話", "stage": 4}, {"id": "4-3", "name": "リサイクル", "stage": 4}, {"id": "4-4", "name": "ダンサー", "stage": 4}, {"id": "4-5", "name": "リミックス4", "stage": 4}, {"id": "5-1", "name": "虫取り", "stage": 5}, {"id": "5-2", "name": "雷", "stage": 5}, {"id": "5-3", "name": "そっとキャッチ", "stage": 5}, {"id": "5-4", "name": "ワイパー", "stage": 5}, {"id": "5-5", "name": "リミックス5", "stage": 5}, {"id": "6-1", "name": "シュート練習", "stage": 6}, {"id": "6-2", "name": "デッキブラシ", "stage": 6}, {"id": "6-3", "name": "THE A", "stage": 6}, {"id": "6-4", "name": "侍", "stage": 6}, {"id": "6-5", "name": "リミックス6", "stage": 6}, {"id": "7-1", "name": "カーアクション２", "stage": 7}, {"id": "7-2", "name": "パンプアップル２", "stage": 7}, {"id": "7-3", "name": "コロコロ行進２", "stage": 7}, {"id": "7-4", "name": "パラソル２", "stage": 7}, {"id": "7-5", "name": "リミックス7", "stage": 7}, {"id": "8-1", "name": "そっとキャッチ２", "stage": 8}, {"id": "8-2", "name": "へくしょいムーン２", "stage": 8}, {"id": "8-3", "name": "ケロケロロケット２", "stage": 8}, {"id": "8-4", "name": "会話２", "stage": 8}, {"id": "8-5", "name": "リミックス8", "stage": 8}, {"id": "9-1", "name": "輪くぐり２", "stage": 9}, {"id": "9-2", "name": "ダンサー２", "stage": 9}, {"id": "9-3", "name": "虫取り２", "stage": 9}, {"id": "9-4", "name": "棒つかみ", "stage": 9}, {"id": "9-5", "name": "リミックス9", "stage": 9}, {"id": "10-1", "name": "デッキブラシ２", "stage": 10}, {"id": "10-2", "name": "ハードル２", "stage": 10}, {"id": "10-3", "name": "雷２", "stage": 10}, {"id": "10-4", "name": "PETとなわとび", "stage": 10}, {"id": "10-5", "name": "リミックス10", "stage": 10}, {"id": "11-1", "name": "シュート練習２", "stage": 11}, {"id": "11-2", "name": "フライングディスク２", "stage": 11}, {"id": "11-3", "name": "カニトリオ２", "stage": 11}, {"id": "11-4", "name": "ガーディアン", "stage": 11}, {"id": "11-5", "name": "リミックス11", "stage": 11}, {"id": "12-1", "name": "棒つかみ２", "stage": 12}, {"id": "12-2", "name": "侍２", "stage": 12}, {"id": "12-3", "name": "ワイパー２", "stage": 12}, {"id": "12-4", "name": "手拍子", "stage": 12}, {"id": "12-5", "name": "リミックス12", "stage": 12}, {"id": "13-1", "name": "リサイクル２", "stage": 13}, {"id": "13-2", "name": "PETとなわとび２", "stage": 13}, {"id": "13-3", "name": "THE A２", "stage": 13}, {"id": "13-4", "name": "くっしん菌", "stage": 13}, {"id": "13-5", "name": "リミックス13", "stage": 13}, {"id": "14-1", "name": "ガーディアン２", "stage": 14}, {"id": "14-2", "name": "下ごしらえ２", "stage": 14}, {"id": "14-3", "name": "プチプチ研究室２", "stage": 14}, {"id": "14-4", "name": "わたり鳥", "stage": 14}, {"id": "14-5", "name": "リミックス14", "stage": 14}, {"id": "15-1", "name": "くっしん菌２", "stage": 15}, {"id": "15-2", "name": "アレのエサ２", "stage": 15}, {"id": "15-3", "name": "手拍子２", "stage": 15}, {"id": "15-4", "name": "わたり鳥２", "stage": 15}, {"id": "15-5", "name": "リミックス15", "stage": 15}, {"id": "16-1", "name": "リミックス16", "stage": 16}, {"id": "16-2", "name": "リミックス17", "stage": 16}, {"id": "16-3", "name": "リミックス18", "stage": 16}, {"id": "16-4", "name": "リミックス19", "stage": 16}, {"id": "16-5", "name": "リミックス20", "stage": 16}];
+const KEY = "rhythm-heaven-ms-perfect-v2";
+let state = load();
+let current = null;
+let previousDrawId = null;
+let spinning = false;
+
+function load(){
+  const defaults = {enabled:Object.fromEntries(GAMES.map(g=>[g.id,true]))};
+  try {
+    const s=JSON.parse(localStorage.getItem(KEY)||"null");
+    if(s && s.enabled) return {enabled:{...defaults.enabled,...s.enabled}};
+  } catch(e){}
+  // 旧バージョンのデータが残っている場合は、PERFECT達成済みを
+  // 「チェックOFF＝達成・抽選対象外」として引き継ぐ。
+  try {
+    const old=JSON.parse(localStorage.getItem("rhythm-heaven-ms-perfect-v1")||"null");
+    if(old && old.enabled){
+      const enabled={...defaults.enabled};
+      GAMES.forEach(g=>{
+        enabled[g.id] = old.enabled[g.id] !== false && !(Array.isArray(old.cleared) && old.cleared.includes(g.id));
+      });
+      return {enabled};
+    }
+  } catch(e){}
+  return defaults;
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function eligible(){return GAMES.filter(g=>state.enabled[g.id]!==false);}
+function setTab(id){
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+  ["draw","settings"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id));
+  if(id==="settings") renderSettings();
+}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
+
+function updateTop(){
+  const e=eligible();
+  const total=GAMES.length;
+  const done=total-e.length;
+  const pct=Math.round(done/total*100);
+
+  const drawStatus=document.getElementById("drawStatus");
+  const drawCount=document.getElementById("drawProgressCount");
+  const drawFill=document.getElementById("drawProgressFill");
+  const drawPct=document.getElementById("drawProgressPct");
+  const drawRemaining=document.getElementById("drawProgressRemaining");
+
+  if(drawStatus) drawStatus.textContent=`未達成：${e.length} / ${total}`;
+  if(drawCount) drawCount.textContent=`${done} / ${total}`;
+  if(drawFill) drawFill.style.width=pct+"%";
+  if(drawPct) drawPct.textContent=pct+"%";
+  if(drawRemaining) drawRemaining.textContent=`残り${e.length}ゲーム`;
+
+  document.getElementById("drawBtn").disabled=spinning || e.length===0;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+async function draw(){
+  if(spinning) return;
+
+  let pool=eligible();
+  if(!pool.length){
+    document.getElementById("resultStage").textContent="COMPLETE";
+    document.getElementById("resultName").textContent="全ゲーム達成！";
+    return;
+  }
+
+  // 残り2ゲーム以上なら、直前に引いたゲームを次の最終抽選候補から外す。
+  const avoidId = (pool.length >= 2) ? previousDrawId : null;
+  const finalPool = avoidId ? pool.filter(g=>g.id!==avoidId) : pool;
+  const actualPool = finalPool.length ? finalPool : pool;
+
+  spinning=true;
+  current=null;
+
+  const congrats=document.getElementById("congrats");
+  if(congrats){
+    congrats.textContent="";
+    congrats.classList.remove("show");
+  }
+
+  document.getElementById("drawBtn").disabled=true;
+  document.getElementById("successBtn").disabled=true;
+
+  const stageEl=document.getElementById("resultStage");
+  const nameEl=document.getElementById("resultName");
+  const start=performance.now(), duration=3000;
+
+  let lastId=null;
+  while(performance.now()-start<duration){
+    const t=(performance.now()-start)/duration;
+    const delay=45 + Math.floor(t*t*230);
+
+    // ルーレット中も、連続して同じ名前が出にくいようにする。
+    let displayPool=pool;
+    if(pool.length>=2 && lastId){
+      const candidates=pool.filter(g=>g.id!==lastId);
+      if(candidates.length) displayPool=candidates;
+    }
+
+    const item=displayPool[Math.floor(Math.random()*displayPool.length)];
+    lastId=item.id;
+
+    stageEl.textContent="抽選中…";
+    nameEl.textContent=item.name;
+    await sleep(delay);
+
+    // 抽選途中で達成状態が変わることは通常ないが、
+    // 念のため現時点の候補を最新化。
+    pool=eligible();
+  }
+
+  current=actualPool[Math.floor(Math.random()*actualPool.length)];
+
+  stageEl.textContent=`STAGE ${current.stage}-${current.id.split("-")[1]}`;
+  nameEl.textContent=current.name;
+
+  previousDrawId=current.id;
+
+  document.getElementById("successBtn").disabled=false;
+  spinning=false;
+  updateTop();
+}
+document.getElementById("drawBtn").addEventListener("click",draw);
+document.getElementById("successBtn").addEventListener("click",()=>{
+  if(!current) return;
+  const achieved=current;
+  state.enabled[achieved.id]=false;
+  save();
+  document.getElementById("successBtn").disabled=true;
+
+  const congrats=document.getElementById("congrats");
+  if(congrats){
+    congrats.textContent=`🎉 おめでとう！「${achieved.name}」PERFECT達成！`;
+    congrats.classList.add("show");
+  }
+
+  current=null;
+  updateTop();
+  renderProgress();
+});
+
+function renderProgress(){
+  const root=document.getElementById("progressList"); root.innerHTML="";
+  for(let s=1;s<=16;s++){
+    const arr=GAMES.filter(g=>g.stage===s);
+    const done=arr.filter(g=>state.enabled[g.id]===false).length;
+    const sec=document.createElement("div"); sec.className="stage";
+    sec.innerHTML=`<div class="stage-head"><span>STAGE ${s}</span><span>${done} / ${arr.length} ${done===arr.length?"★ COMPLETE":""}</span></div>`;
+    const grid=document.createElement("div"); grid.className="game-grid";
+    arr.forEach(g=>{
+      const d=state.enabled[g.id]===false;
+      const el=document.createElement("div"); el.className="game"+(d?" done":"");
+      el.innerHTML=`<div class="mark">${d?"✓":"○"}</div><div><div class="name">${escapeHtml(g.name)}</div><div class="small">${d?"達成":"未達成"}</div></div>`;
+      grid.appendChild(el);
+    });
+    sec.appendChild(grid); root.appendChild(sec);
+  }
+}
+function renderSettings(){
+  const root=document.getElementById("settingsList"); root.innerHTML="";
+  for(let s=1;s<=16;s++){
+    const sec=document.createElement("div"); sec.className="stage";
+    sec.innerHTML=`<div class="stage-head"><span>STAGE ${s}</span><span>5 games</span></div>`;
+    const grid=document.createElement("div"); grid.className="game-grid";
+    GAMES.filter(g=>g.stage===s).forEach(g=>{
+      const wrap=document.createElement("label"); wrap.className="setting-game";
+      const cb=document.createElement("input"); cb.type="checkbox"; cb.checked=state.enabled[g.id]!==false; cb.addEventListener("change",()=>{
+        state.enabled[g.id]=cb.checked;
+        save();
+        updateTop();
+        renderProgress();
+      });
+      const text=document.createElement("span"); text.innerHTML=`<b>${g.id}</b> ${escapeHtml(g.name)}`;
+      wrap.append(cb,text); grid.appendChild(wrap);
+    });
+    sec.appendChild(grid); root.appendChild(sec);
+  }
+}
+document.getElementById("allOn").addEventListener("click",()=>{
+  GAMES.forEach(g=>state.enabled[g.id]=true);
+  previousDrawId=null;
+  save(); renderSettings(); updateTop(); renderProgress();
+});
+document.getElementById("allOff").addEventListener("click",()=>{
+  GAMES.forEach(g=>state.enabled[g.id]=false);
+  previousDrawId=null;
+  save(); renderSettings(); updateTop(); renderProgress();
+});
+document.getElementById("reset").addEventListener("click",()=>{
+  if(confirm("すべてのゲームを「未達成・抽選対象」に戻します。よろしいですか？")){
+    GAMES.forEach(g=>state.enabled[g.id]=true);
+    save();
+    current=null;
+    previousDrawId=null;
+    document.getElementById("resultName").textContent="？";
+    document.getElementById("resultStage").textContent="準備OK";
+    document.getElementById("successBtn").disabled=true;
+    const congrats=document.getElementById("congrats");
+    if(congrats){ congrats.textContent=""; congrats.classList.remove("show"); }
+    updateTop();
+    renderProgress();
+    renderSettings();
+  }
+});
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+updateTop(); renderProgress();
+</script>
+</body>
+</html>
